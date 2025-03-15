@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import {AiOutlineClose, AiOutlineMenu} from 'react-icons/ai'
+import { Link } from "react-router-dom";
 import agroLogo from '../assets/AGROFARMA (12).png'
 
 const Navbar = () => {
@@ -13,14 +14,14 @@ const Navbar = () => {
     <div className='flex justify-between items-center h-20 max-w[1240px] mx-[100px] px-4 bg-white text-black'>
         <img className='w-[200px] mx-0' src={agroLogo} alt="" />
         <div className="bg-[#ffffff] shadow-xl rounded-b-lg px-8 mt-14 h-[40px] flex space-x-16 items-center font-poppins">
-            <a href="#" className="text-gray-700 hover:text-green-700">Services</a>
-            <a href="#" className="text-gray-700 hover:text-green-700">Areas</a>
-            <a href="#" className="text-green-900 font-bold relative">
+            <Link to="/services#" className="text-gray-700 hover:text-green-700">Services</Link>
+            <Link to="/areas" className="text-gray-700 hover:text-green-700">Areas</Link>
+            <Link to="/" className="text-green-900 font-bold relative">
                 Home
                 <span className="absolute left-0 -bottom-1 w-full h-[-2px] bg-green-800"></span>
-            </a>
-            <a href="#" className="text-gray-700 hover:text-green-700">About</a>
-            <a href="#" className="text-gray-700 hover:text-green-700">Contact</a>
+            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-green-700">About</Link>
+            <Link to="/contact" className="text-gray-700 hover:text-green-700">Contact</Link>
             </div>
         <div>
 

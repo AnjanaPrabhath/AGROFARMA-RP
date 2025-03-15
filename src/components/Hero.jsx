@@ -1,5 +1,6 @@
 import React from 'react'
 import { ReactTyped } from 'react-typed'
+import { Link } from "react-router-dom";
 import heroImg from '../assets/heroImg2.png'
 import dummy1 from '../assets/dummy1.jpg'
 import dummy2 from '../assets/dummy2.jpg'
@@ -25,7 +26,7 @@ const Hero = () => {
                  <h3 className='md:text-2xl sm:text-3xl text-2xl py-4 text-[#1C5739] font-normal'>grow the world with technology</h3>
 
                  <div className='flex text-xl text-black space-x-4 mt-4 '>
-                    <div><a href=""><img className='w-[150px] rounded-lg hover:scale-110 duration-500 shadow-lg' src={dummy1} alt="" /></a></div>
+                    <Link to="/agri-assist"><img className='w-[150px] rounded-lg hover:scale-110 duration-500 shadow-lg' src={dummy1} alt="" /></Link>
                     <div><img className='w-[150px] rounded-lg' src={dummy2} alt="" /></div>
                     <div><img className='w-[150px] rounded-lg' src={dummy3} alt="" /></div>
                     <div><img className='w-[150px] rounded-lg' src={dummy4} alt="" /></div>

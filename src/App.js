@@ -1,23 +1,14 @@
 import React from "react";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Addvertise from "./components/Addvertise";
-import Newsletter from "./components/Newsletter";
-import Packages from "./components/Packages";
-import Footer from "./components/Footer";
-import Components from "./components/Components";
+import { BrowserRouter } from "react-router-dom";
+import Layout from "./layout/Layout";
 
 
 function App() {
   return (
     <div>
-      <Navbar/> 
-      <Hero/>
-      <Addvertise/>
-      <Components/>
-      
-      
-      <Footer/>
+      <BrowserRouter>
+        <Layout />
+      </BrowserRouter>
       
     </div>
   );
