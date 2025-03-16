@@ -6,6 +6,7 @@ import Areas from "../pages/Areas";
 import Home from "../pages/Home";
 import Alternatives from "../pages/alternatives/Alternatives";
 import Recommendations from "../pages/alternatives/Recommendations";
+import SignIn from "../pages/auth/SignIn";
 
 const Router = () => {
   return (
@@ -17,6 +18,7 @@ const Router = () => {
         <Route path="/areas" element={<Areas />} />
         <Route path="/alternatives" element={<Alternatives />} />
         <Route path="/recommendations" element={<Recommendations />} />
+        <Route path="/signin" element={<SignIn />} />
       </Routes>
     </div>
   );
