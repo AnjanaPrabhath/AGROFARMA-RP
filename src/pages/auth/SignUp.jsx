@@ -20,17 +20,16 @@ const SignUp = () => {
     e.preventDefault();
     setError("");
 
+    // const NODE_URL = process.env.NODE_API_URL
+
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/auth/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`http://localhost:8000/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
       const data = await response.json();
 
@@ -39,7 +38,7 @@ const SignUp = () => {
       }
 
       alert("Signup successful! You can now log in.");
-      navigate("/login");
+      navigate("/signin");
     } catch (err) {
       console.error(err);
       setError(err.message);

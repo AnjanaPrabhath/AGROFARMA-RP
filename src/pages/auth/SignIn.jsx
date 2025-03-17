@@ -20,14 +20,11 @@ const SignIn = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `${process.env.NODE_API_URL}/api/auth/login}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const response = await fetch(`http://localhost:8000/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await response.json();
 
@@ -39,7 +36,7 @@ const SignIn = () => {
       login(data.token);
 
       // Redirect user to dashboard or home
-      navigate("/dashboard");
+      navigate("/alternatives");
     } catch (err) {
       console.error(err);
       setError(err.message);

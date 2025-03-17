@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import agroLogo from "../assets/AGROFARMA (12).png";
 import { AuthContext } from "../context/AuthContext";
 
@@ -12,6 +12,11 @@ const Navbar = () => {
   };
 
   const { isLoggedIn, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const redirect = () => {
+    navigate("/signin");
+  };
 
   return (
     <div className="flex justify-between items-center h-20 max-w[1240px] mx-[100px] px-4 bg-white text-black">
@@ -36,12 +41,23 @@ const Navbar = () => {
       </div>
       <div></div>
       <div>
-        <button
-          onClick={isLoggedIn ? logout : ""}
-          className="px-5 py-2 w-[100px] bg-gradient-to-r from-[#89ffbe] to-[#63ffed] text-[#1C5739] uppercase font-poppins font-semibold rounded-lg"
-        >
-          {isLoggedIn ? "Logout" : "Login"}
-        </button>
+        {isLoggedIn ? (
+          <button
+            onClick={logout}
+            className="px-5 py-2 w-[100px] bg-gradient-to-r from-[#89ffbe] to-[#63ffed] text-[#1C5739] uppercase font-poppins font-semibold rounded-lg"
+          >
+            Logout
+          </button>
+        ) : (
+          <Link to="/signin">
+            <button
+              onClick={logout}
+              className="px-5 py-2 w-[100px] bg-gradient-to-r from-[#89ffbe] to-[#63ffed] text-[#1C5739] uppercase font-poppins font-semibold rounded-lg"
+            >
+              Login
+            </button>
+          </Link>
+        )}
       </div>
       <div onClick={handleNav} className="block md:hidden">
         {!nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
