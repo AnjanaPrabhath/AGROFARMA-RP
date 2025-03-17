@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import Avoid from "../../components/alternatives/recommendations/Avoid";
 import Best from "../../components/alternatives/recommendations/Best";
 import Card from "../../components/alternatives/common/Card";
@@ -12,6 +13,7 @@ import Potato from "../../assets/crop-images/potato.png";
 import Pumpkin from "../../assets/crop-images/pumpkin.png";
 import SnakeGourd from "../../assets/crop-images/snake-gourd.png";
 import Tomato from "../../assets/crop-images/tomato.png";
+import Button from "../../components/alternatives/common/Button";
 
 const months = [
   { value: 1, label: "January" },
@@ -42,7 +44,7 @@ const images = {
 };
 
 const Recommendations = ({ recommendations }) => {
-  console.log(recommendations);
+  const [saveStatus, setSaveStatus] = useState(null);
 
   const previousCrop = recommendations.previousCrop;
   const plantingMonth = recommendations.plantingMonth;
@@ -54,6 +56,41 @@ const Recommendations = ({ recommendations }) => {
 
   const best = sortedRecommendations.slice(0, 3);
   const avoid = sortedRecommendations.slice(-3);
+
+  const handleSaveSession = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setSaveStatus("No token found. Please log in again.");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:8000/api/sessions/alternatives",
+        {
+          harvestMonth,
+          plantingMonth,
+          previousCrop,
+          recommendations: sortedRecommendations,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setSaveStatus("Session saved successfully!");
+      } else {
+        setSaveStatus("Failed to save session.");
+      }
+    } catch (error) {
+      console.error("Save session error:", error);
+      setSaveStatus("An error occurred while saving.");
+    }
+  };
 
   return (
     <div className="h-lvh bg-gradient-to-r from-[#a0fbc1] to-white px-40">
@@ -90,6 +127,28 @@ const Recommendations = ({ recommendations }) => {
       </div>
       <div className="text-center mt-20">
         *Hover over a specific crop to see more information.
+      </div>
+      <div className="flex items-center justify-center mt-10">
+        <div className="">
+          <button
+            onClick={handleSaveSession}
+            className="bg-[#f7c35f] p-4 px-20 rounded-xl text-xl font-semibold tracking-wide"
+            disabled={saveStatus?.includes("success")}
+          >
+            Save Session
+          </button>
+          {saveStatus && (
+            <div
+              className={`text-md text-center mt-4 ${
+                saveStatus.includes("success")
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {saveStatus}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
