@@ -19,7 +19,7 @@ const best_crops = [
   },
 ];
 
-const Best = () => {
+const Best = ({ crops, images }) => {
   return (
     <div className="pt-24 px-16 grid gap-2">
       <Card
@@ -34,17 +34,24 @@ const Best = () => {
         rounded="rounded-3xl"
         padding="p-2"
       >
-        {best_crops.map((crop, index) => (
+        {crops.map((crop, index) => (
           <Card
             key={index}
-            className="col-span-2 flex items-center h-20"
+            className="col-span-2 items-center grid grid-cols-4 overflow-hidden"
             rounded="rounded-3xl"
             bgColor="bg-[#ffe2e2]"
+            padding="p-0"
           >
-            <img src={crop.img} />
-            <div className="w-full flex justify-between">
-              <div>{crop.name}</div>
-              <div>{crop.rank}</div>
+            <div className="col-span-2 max-h-20 flex items-center justify-center overflow-hidden">
+              <img
+                src={images[crop.crop.toLowerCase().trim().replace(/\s/g, "")]}
+                alt={crop.crop}
+                className=""
+              />
+            </div>
+            <div className="col-span-2 flex justify-between items-center px-10 w-full">
+              <div>{crop.crop}</div>
+              <div className="font-bold text-xl">#{index + 1}</div>
             </div>
           </Card>
         ))}

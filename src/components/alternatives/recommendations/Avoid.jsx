@@ -3,7 +3,7 @@ import Card from "../common/Card";
 
 const avoid_crops = ["Carrot", "Brinjal", "Tomato", "Cabbage", "Leeks"];
 
-const Avoid = () => {
+const Avoid = ({ crops, images }) => {
   return (
     <div className="pt-24 px-16 grid gap-2">
       <Card
@@ -18,14 +18,24 @@ const Avoid = () => {
         rounded="rounded-3xl"
         padding="p-2"
       >
-        {avoid_crops.map((crop, index) => (
+        {crops.map((crop, index) => (
           <Card
             key={index}
-            className="col-span-1 h-20"
+            className="col-span-2 items-center grid grid-cols-4 overflow-hidden"
             rounded="rounded-3xl"
             bgColor="bg-[#ffe2e2]"
+            padding="p-0"
           >
-            {crop}
+            <div className="col-span-2 max-h-20 flex items-center justify-center overflow-hidden">
+              <img
+                src={images[crop.crop.toLowerCase().trim().replace(/\s/g, "")]}
+                alt={crop.crop}
+                className=""
+              />
+            </div>
+            <div className="col-span-2 flex justify-between items-center px-10 w-full">
+              <div>{crop.crop}</div>
+            </div>
           </Card>
         ))}
       </Card>
