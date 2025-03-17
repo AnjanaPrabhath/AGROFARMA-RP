@@ -8,9 +8,9 @@ const location = window.location.pathname;
 const Layout = () => {
   return (
     <div>
-      {location !== "/signin" && <Navbar />}
+      {!["/signin", "/signup"].includes(location) && <Navbar />}
       <Router />
-      {location !== "/signin" && <Footer />}
+      {!["/signin", "/signup"].includes(location) && <Footer />}
     </div>
   );
 };

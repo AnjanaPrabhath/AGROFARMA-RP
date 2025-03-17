@@ -1,86 +1,50 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import logo from "../../assets/AGROFARMA (12).png";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
 
-const SignIn = () => {
-  const { login } = useContext(AuthContext);
+const SignUp = () => {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState("");
 
-  // const [formData, setFormData] = useState({
-  //   email: "",
-  //   password: "",
-  // });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       const response = await fetch(
-        `${process.env.NODE_API_URL}/api/auth/login}`,
+        `${process.env.REACT_APP_API_URL}/api/auth/register`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         }
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error(data.msg || "Failed to register");
       }
 
-      // Use context login function to update global state + localStorage
-      login(data.token);
-
-      // Redirect user to dashboard or home
-      navigate("/dashboard");
+      alert("Signup successful! You can now log in.");
+      navigate("/login");
     } catch (err) {
       console.error(err);
       setError(err.message);
     }
   };
-  // const handleChange = (e) => {
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError("");
-
-  //   try {
-  //     const response = await fetch(
-  //       `${process.env.REACT_APP_API_URL}/api/auth/login`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(formData),
-  //       }
-  //     );
-
-  //     const data = await response.json();
-
-  //     if (!response.ok) {
-  //       throw new Error(data.msg || "Failed to login");
-  //     }
-
-  //     // Save the token to localStorage
-  //     localStorage.setItem("token", data.token);
-
-  //     // Navigate to recommendations or home page
-  //     navigate("/alternatives");
-  //   } catch (err) {
-  //     console.error(err);
-  //     setError(err.message);
-  //   }
-  // };
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -88,38 +52,49 @@ const SignIn = () => {
         <div>
           <img src={logo} alt="Company Logo" className="mx-auto lg:h-20" />
           <h2 className="mt-10 text-center text-2xl font-bold text-gray-900">
-            Sign in to your account
+            Create an Account
           </h2>
           {error && <div className="mb-4 text-red-500">{error}</div>}
         </div>
 
         <form
-          onSubmit={handleLogin}
+          onSubmit={handleSubmit}
           action="#"
           method="POST"
           className="space-y-6"
         >
           <div>
             <input
+              id="username"
+              name="username"
+              type="text"
+              required
+              placeholder="Username (John Doe)"
+              autoComplete="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="block w-full rounded-t-md border bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+            />
+            <input
               id="email-address"
               name="email"
               type="email"
               required
-              placeholder="Email"
+              placeholder="Email (johndoe@example.com)"
               autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="block w-full rounded-t-md border bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+              value={formData.email}
+              onChange={handleChange}
+              className="block w-full border border-t-0 bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
             />
             <input
               id="password"
               name="password"
               type="password"
               required
-              placeholder="Password"
+              placeholder="Password (********)"
               autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
               className="block w-full -mt-px rounded-b-md border bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
             />
           </div>
@@ -148,17 +123,17 @@ const SignIn = () => {
             type="submit"
             className="w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline-indigo-600"
           >
-            Sign In
+            Sign Up
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-500">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <span
-            onClick={() => navigate("/signup")}
-            className="font-semibold text-indigo-600 hover:text-indigo-500"
+            onClick={() => navigate("/signin")}
+            className="font-semibold text-indigo-600 hover:text-indigo-500 cursor-pointer"
           >
-            Sign Up
+            Sign In
           </span>
         </p>
       </div>
@@ -166,4 +141,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;
