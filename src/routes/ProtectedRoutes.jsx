@@ -8,7 +8,8 @@ const ProtectedRoute = ({ children }) => {
   console.log("Protected Route - isLoggedIn:", isLoggedIn);
 
   if (!isLoggedIn) {
-    return <Navigate to="/signin" replace />;
+    window.location.href = "/signin";
+    return null;
   }
 
   return children;

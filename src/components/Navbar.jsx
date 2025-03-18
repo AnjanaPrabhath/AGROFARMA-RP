@@ -49,14 +49,14 @@ const Navbar = () => {
             Logout
           </button>
         ) : (
-          <Link to="/signin">
+          <a href="/signin">
             <button
               onClick={logout}
               className="px-5 py-2 w-[100px] bg-gradient-to-r from-[#89ffbe] to-[#63ffed] text-[#1C5739] uppercase font-poppins font-semibold rounded-lg"
             >
               Login
             </button>
-          </Link>
+          </a>
         )}
       </div>
       <div onClick={handleNav} className="block md:hidden">
