@@ -1,9 +1,12 @@
 import React from 'react'
+import ImageUploader from '../components/ImageUploader'
 
 const AgriAssist = () => {
   return (
     <div>
-        <div className='text-black'>hi</div>
+        <div>
+          <ImageUploader/>
+        </div>
     </div>
   )
 }
