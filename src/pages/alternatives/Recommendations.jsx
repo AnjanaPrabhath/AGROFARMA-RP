@@ -93,8 +93,8 @@ const Recommendations = ({ recommendations }) => {
   };
 
   return (
-    <div className="h-lvh bg-gradient-to-r from-[#a0fbc1] to-white px-40">
-      <div className="pt-20 px-16">
+    <div className="h-[96vh] overflow-hidden rounded-xl bg-gradient-to-br from-[#a0fbc1] to-white px-40">
+      <div className="pt-12 px-16">
         <Card rounded="rounded-3xl" padding="p-0" className="overflow-hidden">
           <div className="grid grid-cols-4 max-h-44">
             <div className="col-span-1 p-6">
@@ -117,7 +117,7 @@ const Recommendations = ({ recommendations }) => {
           </div>
         </Card>
       </div>
-      <div className="mt-[-40px] grid grid-cols-2">
+      <div className="mt-[-60px] grid grid-cols-2">
         <div className="col-span-1">
           <Avoid crops={avoid} images={images} />
         </div>
@@ -125,17 +125,21 @@ const Recommendations = ({ recommendations }) => {
           <Best crops={best} images={images} />
         </div>
       </div>
-      <div className="text-center mt-20">
-        *Hover over a specific crop to see more information.
+      <div className="text-center text-sm mt-10 text-gray-500">
+        Save your session so that you may refer to it at a later date.
       </div>
-      <div className="flex items-center justify-center mt-10">
+      <div className="flex items-center justify-center mt-4">
         <div className="">
           <button
             onClick={handleSaveSession}
-            className="bg-[#f7c35f] p-4 px-20 rounded-xl text-xl font-semibold tracking-wide"
+            className={`p-4 px-20 rounded-xl text-xl font-semibold tracking-wide ${
+              saveStatus?.includes("success")
+                ? "bg-gray-300 text-white"
+                : "bg-[#f7c35f]"
+            }`}
             disabled={saveStatus?.includes("success")}
           >
-            Save Session
+            {saveStatus?.includes("success") ? "Done!" : "Save Session"}
           </button>
           {saveStatus && (
             <div

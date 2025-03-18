@@ -4,7 +4,7 @@ const Button = ({ children, type }) => {
   return (
     <button
       type={type}
-      className="bg-[#f7c35f] font-semibold text-xl px-4 py-4 rounded-lg w-full"
+      className="bg-[#f7c35f] font-semibold text-lg px-4 py-2 rounded-lg w-full"
     >
       {children}
     </button>

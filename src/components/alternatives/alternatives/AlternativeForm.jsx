@@ -78,13 +78,13 @@ const AlternativeForm = ({ vegetables, onSubmit }) => {
 
   return (
     <div className="grid w-full grid-cols-4 items-center justify-center z-50">
-      <div className="col-start-2 col-span-2 grid gap-8">
-        <Card>
-          <h1 className="text-2xl text-center font-semibold">
+      <div className="col-start-2 col-span-2 grid gap-4">
+        <Card padding="p-2">
+          <h1 className="text-xl text-center font-semibold">
             Crop Recommendations
           </h1>
         </Card>
-        <Card className="flex gap-4 flex-col">
+        <Card className="flex gap-4 flex-col" padding="p-2">
           <form className="grid grid-flow-row gap-4" onSubmit={handleSubmit}>
             {inputFields.map((field, index) => (
               <select
@@ -102,14 +102,14 @@ const AlternativeForm = ({ vegetables, onSubmit }) => {
                 ))}
               </select>
             ))}
-            <span className="text-gray-400">
+            <span className="text-gray-400 text-center">
               Right now it is{" "}
               {months.find((month) => month.value === currentMonth)?.label}
             </span>
-            <div className="flex gap-4 items-center">
+            {/* <div className="flex gap-4 items-center">
               <input type="checkbox" />
               Skip Soil Acidity*
-            </div>
+            </div> */}
             <div>
               <Button type="submit">Get Recommendations</Button>
             </div>

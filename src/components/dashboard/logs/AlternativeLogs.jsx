@@ -12,8 +12,8 @@ import Pumpkin from "../../../assets/crop-images/pumpkin.png";
 import SnakeGourd from "../../../assets/crop-images/snake-gourd.png";
 import Tomato from "../../../assets/crop-images/tomato.png";
 
-import Avoid from "../../alternatives/recommendations/Avoid";
-import Best from "../../alternatives/recommendations/Best";
+import Avoid from "../../alternatives/recommendations/Avoid2";
+import Best from "../../alternatives/recommendations/Best2";
 
 const images = {
   beans: Beans,
@@ -51,63 +51,70 @@ const AlternativeLogs = ({ alternatives }) => {
 
   console.log(alternatives);
   return (
-    <div className="grid gap-4 pl-4 pt-4 grid-cols-12 h-full">
-      <div className="col-span-4 gap-4 grid overflow-y-scroll pr-2 h-full">
-        {alternatives.map((alternative, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-12 p-0 h-fit bg-white rounded-2xl"
-            rounded="rounded-2xl"
-            onClick={() => setSelectedSession(alternative.recommendations)}
-          >
-            <div className="col-span-6 p-4">
-              <div className="text-xs text-gray-400">
-                {new Date(alternative.timestamp).toLocaleString()}
+    <div className="w-full h-[90vh] grid grid-cols-12">
+      <div className="col-span-4 p-4 overflow-hidden">
+        <div className="h-[83vh] flex flex-col gap-2 overflow-y-scroll pr-2">
+          {/* Card */}
+          {alternatives.map((alternative, index) => (
+            <div
+              key={index}
+              className="rounded-xl w-full h-fit grid grid-cols-4 bg-white"
+              onClick={() => setSelectedSession(alternative.recommendations)}
+            >
+              <div className="col-span-2 p-4">
+                <div className="text-xs text-gray-400">
+                  {new Date(alternative.timestamp).toLocaleString()}
+                </div>
+                <div className="mt-4 text-sm">
+                  <div>Previous Crop: {alternative.previousCrop}</div>
+                  <div>
+                    Planting Month: {months[alternative.plantingMonth - 1]}
+                  </div>
+                  <div>
+                    Harvesting Month: {months[alternative.harvestMonth - 1]}
+                  </div>
+                </div>
               </div>
-              <div className="mt-4 text-sm">
-                <div>Previous Crop : {alternative.previousCrop}</div>
-                <div>
-                  Planting Month : {months[alternative.plantingMonth - 1]}
+              <div className="col-span-2 p-1">
+                <div className="overflow-hidden rounded-xl h-32 w-full">
+                  <img
+                    className="h-full w-full object-cover"
+                    src={
+                      images[
+                        alternative.previousCrop
+                          .toLowerCase()
+                          .trim()
+                          .replace(/\s/g, "")
+                      ]
+                    }
+                    alt={alternative.previousCrop}
+                  />
                 </div>
-                <div>
-                  Harvesting Month : {months[alternative.harvestMonth - 1]}
-                </div>
-              </div>{" "}
+              </div>
             </div>
-            <div className="col-span-6 overflow-hidden m-1 rounded-lg h-fit">
-              <img
-                className="h-32"
-                src={
-                  images[
-                    alternative.previousCrop
-                      .toLowerCase()
-                      .trim()
-                      .replace(/\s/g, "")
-                  ]
-                }
-                alt={alternative.previousCrop}
-              />
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-      {selectedSession.length > 0 ? (
-        <div className="col-span-8 flex flex-col relative z-0">
-          <div className="absolute top-[-12%]">
-            <Best images={images} crops={avoid} />
-          </div>
-          <div className="absolute bottom-[12%]">
-            {" "}
-            <Avoid images={images} crops={avoid} />
-          </div>
+      <div className="col-span-8">
+        <div className="h-[83vh]">
+          {selectedSession.length > 0 ? (
+            <>
+              <div className="mb-6">
+                <Best images={images} crops={avoid} />
+              </div>
+              <div className="mt-auto">
+                <Avoid images={images} crops={avoid} />
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500">
+                Select a session from the left to view recommendations
+              </p>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="col-span-8 flex items-center justify-center">
-          <p className="text-gray-500">
-            Select a session from the right to view recommendations
-          </p>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
