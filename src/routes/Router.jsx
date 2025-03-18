@@ -9,6 +9,7 @@ import Recommendations from "../pages/alternatives/Recommendations";
 import SignIn from "../pages/auth/SignIn";
 import SignUp from "../pages/auth/SignUp";
 import ProtectedRoute from "./ProtectedRoutes";
+import Dashboard from "../pages/Dashboard";
 
 const Router = () => {
   return (
@@ -23,6 +24,14 @@ const Router = () => {
           element={
             <ProtectedRoute>
               <Alternatives />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
             </ProtectedRoute>
           }
         />
