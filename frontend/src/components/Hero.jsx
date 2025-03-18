@@ -33,7 +33,7 @@ const Hero = () => {
         src={Image1}
         alt=""
       />
-      <span className="absolute text-center group-hover:scale-110 inset-0 flex items-center justify-center text-white text-lg font-bold bg-green-700 bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg">
+      <span className="absolute text-center group-hover:scale-110 inset-0 flex items-center text-bg-black justify-center text-white text-lg font-bold bg-green-700 bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg">
         Growth Rate Analyzer
       </span>
     </div>
