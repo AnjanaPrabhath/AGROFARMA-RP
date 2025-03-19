@@ -10,12 +10,14 @@ import SignIn from "../pages/auth/SignIn";
 import SignUp from "../pages/auth/SignUp";
 import ProtectedRoute from "./ProtectedRoutes";
 import Dashboard from "../pages/Dashboard";
+import About from "../pages/About";
 
 const Router = () => {
   return (
     <div>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
         <Route path="/agri-assist" element={<AgriAssist />} />
         <Route path="/services" element={<Services />} />
         <Route path="/areas" element={<Areas />} />

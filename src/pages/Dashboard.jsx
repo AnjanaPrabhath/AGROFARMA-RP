@@ -62,14 +62,14 @@ const features = [
     component: <Alternatives />,
   },
   {
-    name: "Soil Status",
+    name: "Growth Success Analysis",
     href: "#",
     icon: FolderIcon,
     current: false,
     component: <SoilStatus />,
   },
   {
-    name: "Cost Analysis",
+    name: "Market Price Prediction",
     href: "#",
     icon: CalendarIcon,
     current: false,
