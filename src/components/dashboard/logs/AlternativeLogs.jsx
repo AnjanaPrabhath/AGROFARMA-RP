@@ -53,7 +53,7 @@ const AlternativeLogs = ({ alternatives }) => {
   return (
     <div className="w-full h-[90vh] grid grid-cols-12">
       <div className="col-span-4 p-4 overflow-hidden">
-        <div className="h-[83vh] flex flex-col gap-2 overflow-y-scroll pr-2">
+        <div className="h-[83vh] flex flex-col gap-2 overflow-y-auto pr-2">
           {/* Card */}
           {alternatives.map((alternative, index) => (
             <div
