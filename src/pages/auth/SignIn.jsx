@@ -36,7 +36,7 @@ const SignIn = () => {
       login(data.token);
 
       // Redirect user to dashboard or home
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
       setError(err.message);

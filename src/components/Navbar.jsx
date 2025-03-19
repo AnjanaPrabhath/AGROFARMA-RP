@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import agroLogo from "../assets/AGROFARMA (12).png";
 import { AuthContext } from "../context/AuthContext";
 
@@ -12,11 +12,11 @@ const Navbar = () => {
   };
 
   const { isLoggedIn, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const redirect = () => {
-    navigate("/signin");
-  };
+  // const redirect = () => {
+  //   navigate("/signin");
+  // };
 
   return (
     <div className="flex justify-between items-center h-20 max-w[1240px] mx-[100px] px-4 bg-white text-black">
@@ -25,6 +25,11 @@ const Navbar = () => {
         <Link to="/services#" className="text-gray-700 hover:text-green-700">
           Services
         </Link>
+        {isLoggedIn && (
+          <a href="/dashboard" className="text-gray-700 hover:text-green-700">
+            Dashboard
+          </a>
+        )}
         <Link to="/areas" className="text-gray-700 hover:text-green-700">
           Areas
         </Link>
@@ -70,12 +75,12 @@ const Navbar = () => {
         }
       >
         <h1 className="w-full px-4 text-3xl font-bold text-[#00df9a] mt-8">
-          IDIOT
+          Agrofarma
         </h1>
         <ul className="pt-6 uppercase">
           <li className="p-4 border-b border-gray-700">Home</li>
-          <li className="p-4 border-b border-gray-700">Company</li>
-          <li className="p-4 border-b border-gray-700">Research</li>
+          <li className="p-4 border-b border-gray-700">Areas</li>
+          {/* <li className="p-4 border-b border-gray-700">Research</li> */}
           <li className="p-4 border-b border-gray-700">About</li>
           <li className="p-4">Contact</li>
         </ul>

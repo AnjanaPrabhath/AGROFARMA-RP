@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Areas = () => {
-  return (
-    <div>Areas</div>
-  )
-}
+  return <div>Areas</div>;
+};
 
-export default Areas
+export default Areas;

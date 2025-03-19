@@ -45,6 +45,16 @@ const navigation = [
     component: <DashboardHome />,
   },
   {
+    name: "Log",
+    href: "#",
+    icon: ChartPieIcon,
+    current: false,
+    component: <Log />,
+  },
+];
+
+const features = [
+  {
     name: "Alternatives",
     href: "#",
     icon: UsersIcon,
@@ -72,14 +82,8 @@ const navigation = [
     current: false,
     component: <Assistant />,
   },
-  {
-    name: "Log",
-    href: "#",
-    icon: ChartPieIcon,
-    current: false,
-    component: <Log />,
-  },
 ];
+
 const teams = [
   { id: 1, name: "Home", href: "/", initial: "H", current: false },
   { id: 2, name: "About", href: "/about", initial: "A", current: false },
@@ -270,6 +274,42 @@ export default function Dashboard() {
                     ))}
                   </ul>
                 </li>
+
+                <li>
+                  <div className="text-xs/6 font-semibold text-black">
+                    Features
+                  </div>
+                  <ul role="list" className="-mx-2 mt-2 space-y-1">
+                    {features.map((item) => (
+                      <li
+                        key={item.name}
+                        onClick={() => setActiveTab(item.component)}
+                      >
+                        <a
+                          href={item.href}
+                          className={classNames(
+                            activeTab === item.component
+                              ? "bg-[#16b766] text-white"
+                              : "text-black hover:bg-[#72f5b3] hover:text-white",
+                            "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"
+                          )}
+                        >
+                          <item.icon
+                            aria-hidden="true"
+                            className={classNames(
+                              activeTab === item.component
+                                ? "text-white"
+                                : "text-black group-hover:text-white",
+                              "size-6 shrink-0"
+                            )}
+                          />
+                          {item.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+
                 <li>
                   <div className="text-xs/6 font-semibold text-black">
                     Quick Links

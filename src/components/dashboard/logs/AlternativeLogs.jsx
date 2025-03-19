@@ -53,12 +53,12 @@ const AlternativeLogs = ({ alternatives }) => {
   return (
     <div className="w-full h-[90vh] grid grid-cols-12">
       <div className="col-span-4 p-4 overflow-hidden">
-        <div className="h-[83vh] flex flex-col gap-2 overflow-y-auto pr-2">
+        <div className="h-[85vh] flex flex-col gap-2 overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-[#16b766] [&::-webkit-scrollbar-thumb]:rounded-full">
           {/* Card */}
           {alternatives.map((alternative, index) => (
             <div
               key={index}
-              className="rounded-xl w-full h-fit grid grid-cols-4 bg-white"
+              className="rounded-xl w-full h-fit grid grid-cols-4 bg-white cursor-pointer transition-opacity hover:opacity-80 duration-300 "
               onClick={() => setSelectedSession(alternative.recommendations)}
             >
               <div className="col-span-2 p-4">
@@ -95,8 +95,8 @@ const AlternativeLogs = ({ alternatives }) => {
           ))}
         </div>
       </div>
-      <div className="col-span-8">
-        <div className="h-[83vh]">
+      <div className="col-span-8 p-4">
+        <div className="h-[85vh]">
           {selectedSession.length > 0 ? (
             <>
               <div className="mb-6">

@@ -50,24 +50,28 @@ const Log = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-br from-[#a0fbc1] to-white rounded-xl h-[96vh] overflow-hidden">
+    <div className=" rounded-xl h-[96vh] overflow-hidden">
       <div className="w-full flex">
-        {tabs.map((tab, index) => (
-          <div
-            className={`z-100 col-span-2 w-full py-6 ${
-              activeSection.type === tab.component.type
-                ? "bg-[#a0fbc1]"
-                : "bg-gray-50"
-            } text-center hover:bg-[#d0ffda] cursor-pointer`}
-            key={index}
-            rounded="rounded-0 hover:bg-gray-100 cursor-pointer"
-            onClick={() => setActiveSection(tab.component)}
-          >
-            {tab.name}
-          </div>
-        ))}
+        <div className="bg-white flex w-full gap-4">
+          {tabs.map((tab, index) => (
+            <div
+              className={`z-100 col-span-2 border my-2 rounded-xl w-full py-2 font-semibold ${
+                activeSection.type === tab.component.type
+                  ? "bg-[#16b766] text-white hover:text-black"
+                  : ""
+              } text-center hover:bg-[#d0ffda] cursor-pointer`}
+              key={index}
+              rounded="rounded-0 hover:bg-gray-100 cursor-pointer"
+              onClick={() => setActiveSection(tab.component)}
+            >
+              {tab.name}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="w-full h-full">{activeSection}</div>
+      <div className="w-full h-full rounded-t-xl bg-gradient-to-br from-[#a0fbc1] to-white">
+        {activeSection}
+      </div>
     </div>
   );
 };
