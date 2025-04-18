@@ -36,6 +36,99 @@ const CostAnalysis = () => {
   const [totalWeight, setTotalWeight] = useState("");
   const [packagingType, setPackagingType] = useState("");
 
+  function calculateTransportCost(
+    fuelPrice,
+    vehicleType,
+    totalWeight,
+    startCity,
+    endCity
+  ) {
+    // Define constants for each vehicle type
+    const FUEL_EFFICIENCY = {
+      lorry: 15, // km/L
+      threeWheel: 15, // km/L
+    };
+
+    const VEHICLE_LOAD_CAPACITY = {
+      lorry: 1000, // kg
+      threeWheel: 350, // kg
+    };
+
+    // Get distance between cities
+    function getDistance(startCity, endCity) {
+      if (startCity === "Anuradhapura" && endCity === "Dambulla") {
+        return 63;
+      } else if (startCity === "Kandy" && endCity === "Pettah") {
+        return 113;
+      } else if (startCity === "Kandy" && endCity === "Dambulla") {
+        return 92;
+      } else if (startCity === "Anuradhapura" && endCity === "Pettah") {
+        return 204;
+      } else if (startCity === "Dambulla" && endCity === "Anuradhapura") {
+        return 63;
+      } else if (startCity === "Pettah" && endCity === "Kandy") {
+        return 113;
+      } else if (startCity === "Dambulla" && endCity === "Kandy") {
+        return 92;
+      } else if (startCity === "Pettah" && endCity === "Anuradhapura") {
+        return 204;
+      } else {
+        console.log("Error: Unknown route between these cities");
+        return null;
+      }
+    }
+
+    // Input validation
+    if (!fuelPrice || !vehicleType || !totalWeight || !startCity || !endCity) {
+      console.log("Error: Missing required parameters");
+      return null;
+    }
+
+    // Validate vehicle type
+    if (vehicleType !== "lorry" && vehicleType !== "threeWheel") {
+      console.log(
+        "Error: Invalid vehicle type. Must be 'lorry' or 'threeWheel'"
+      );
+      return null;
+    }
+
+    // Get distance based on cities
+    const distance = getDistance(startCity, endCity);
+    if (distance === null) {
+      return null;
+    }
+
+    // Step 1: Calculate Fuel Cost per km
+    const fuelEfficiency = FUEL_EFFICIENCY[vehicleType];
+    const fuelCostPerKm = fuelPrice / fuelEfficiency;
+    console.log(`Fuel Cost per km: Rs. ${fuelCostPerKm.toFixed(2)}`);
+
+    // Step 2: Calculate Total Fuel Cost (round trip - multiply by 2)
+    const totalFuelCost = fuelCostPerKm * distance * 2;
+    console.log(`Total Fuel Cost: Rs. ${totalFuelCost.toFixed(2)}`);
+
+    // Step 3: Calculate Transport Cost (Rs./Kg)
+    const vehicleLoadCapacity = VEHICLE_LOAD_CAPACITY[vehicleType];
+    const transportCost = totalFuelCost / vehicleLoadCapacity;
+    console.log(`Transport Cost: Rs. ${transportCost.toFixed(2)} per kg`);
+
+    // Step 4: Calculate total cost for given weight
+    const totalTransportCost = transportCost * totalWeight;
+    console.log(
+      `Total Transport Cost for ${totalWeight}kg: Rs. ${totalTransportCost.toFixed(
+        2
+      )}`
+    );
+
+    return {
+      distance,
+      fuelCostPerKm,
+      totalFuelCost,
+      transportCostPerKg: transportCost,
+      totalTransportCost,
+    };
+  }
+
   const handleDateChange = (dates) => {
     if (dates && dates.length > 0) {
       setDate(dates[0]);
@@ -87,7 +180,15 @@ const CostAnalysis = () => {
     const requestBody = {
       Date: moment(fuelDate).format("YYYY-MM-DD"),
     };
-
+    const result = calculateTransportCost(
+      200,
+      100,
+      "threeWheel",
+      500,
+      "Anuradhapura",
+      "Dambulla"
+    );
+    console.log(result);
     try {
       const response = await axios.post(
         `${backendURL}${fuelPriceEndpoint}`,
@@ -151,26 +252,8 @@ const CostAnalysis = () => {
                     value={market1}
                     onChange={(e) => setMarket1(e.target.value)}
                   >
-                    <option value="Local">Local</option>
-                    <option value="International">International</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="type1"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Type:
-                  </label>
-                  <select
-                    id="type1"
-                    className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    value={type1}
-                    onChange={(e) => setType1(e.target.value)}
-                  >
-                    <option value="Fresh">Fresh</option>
-                    <option value="Processed">Processed</option>
+                    <option value="Dambulla">Dambulla</option>
+                    <option value="Pettah">Pettah</option>
                   </select>
                 </div>
 
@@ -187,9 +270,12 @@ const CostAnalysis = () => {
                     value={vegetable1}
                     onChange={(e) => setVegetable1(e.target.value)}
                   >
+                    <option value="Carrot">Carrot</option>
                     <option value="Tomato">Tomato</option>
-                    <option value="Potato">Potato</option>
-                    <option value="Onion">Onion</option>
+                    <option value="Cabbage">Cabbage</option>
+                    <option value="Beans">Beans</option>
+                    <option value="Snake gourd">Snake gourd</option>
+                    <option value="Brinjal">Brinjal</option>
                   </select>
                 </div>
 
@@ -206,7 +292,7 @@ const CostAnalysis = () => {
                     value={fuelType1}
                     onChange={(e) => setFuelType1(e.target.value)}
                   >
-                    <option value="LP_92">LP_92</option>
+                    <option value="LP 92">LP 92</option>
                     <option value="LAD">LAD</option>
                   </select>
                 </div>
@@ -265,8 +351,9 @@ const CostAnalysis = () => {
             {/* Fuel Price Prediction */}
             <div>
               <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                Fuel Prediction
+                Profit / Loss analysis
               </h3>
+              <p>Based on transport and storage Cost</p>
               <div className="space-y-4">
                 <div>
                   <label
@@ -387,7 +474,7 @@ const CostAnalysis = () => {
                   onClick={handlePredictFuelPrice}
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 >
-                  Predict Fuel Price
+                  Predict Profit/Loss
                 </button>
 
                 {fuelPricePrediction ? (

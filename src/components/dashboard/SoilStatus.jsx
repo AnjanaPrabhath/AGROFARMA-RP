@@ -142,11 +142,11 @@ const SoilStatus = () => {
                 Plant Growth Analysis
               </h2>
               <p className="mt-2 text-gray-600">
-                Important! Lorem Ipsum Is Simply Dummy Text Of The Printing And
-                Typesetting Industry. Lorem Ipsum Has Been The Industry's
-                Standard Dummy Text Ever Since The 1500s, When An Unknown
-                Printer Took A Galley Of Type And Scrambled It To Make A Type
-                Specimen Book.
+                Gain insights into your plant’s growth with our intelligent
+                prediction tool. Using environmental data, soil conditions, and
+                past growth patterns, this feature helps you estimate your
+                plant’s development over time. Stay informed and optimize care
+                for healthier, more productive crops!
               </p>
             </div>
 
