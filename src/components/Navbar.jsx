@@ -21,7 +21,8 @@ const Navbar = () => {
   return (
     <div className="flex justify-between items-center h-20 max-w[1240px] mx-[100px] px-4 bg-white text-black">
       <img className="w-[200px] mx-0" src={agroLogo} alt="" />
-      <div className="bg-[#ffffff] shadow-xl rounded-b-lg px-8 mt-14 h-[40px] flex space-x-16 items-center font-poppins">
+      {/* <div className="bg-[#ffffff] shadow-xl rounded-b-lg px-8 mt-14 h-[40px] flex space-x-16 items-center font-poppins"> */}
+      <div className="hidden md:flex bg-[#ffffff] shadow-xl rounded-b-lg px-8 mt-14 h-[40px] space-x-16 items-center font-poppins">
         <Link to="/services#" className="text-gray-700 hover:text-green-700">
           Services
         </Link>
@@ -64,13 +65,16 @@ const Navbar = () => {
           </a>
         )}
       </div>
-      <div onClick={handleNav} className="block md:hidden">
+      {/* <div onClick={handleNav} className="block md:hidden">
         {!nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
+      </div> */}
+      <div onClick={handleNav} className="block md:hidden">
+        {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
       </div>
       <div
         className={
           nav
-            ? "fixed left-0 top-0 w-[60%] border-r border-r-gray-900 h-full bg-[#000300] ease-in-out duration-500"
+            ? "fixed z-50 left-0 top-0 w-[60%] border-r border-r-gray-900 h-full bg-[#000300] ease-in-out duration-500"
             : "fixed left-[-100%]"
         }
       >
@@ -78,11 +82,18 @@ const Navbar = () => {
           Agrofarma
         </h1>
         <ul className="pt-6 uppercase">
-          <li className="p-4 border-b border-gray-700">Home</li>
-          <li className="p-4 border-b border-gray-700">Areas</li>
-          {/* <li className="p-4 border-b border-gray-700">Research</li> */}
-          <li className="p-4 border-b border-gray-700">About</li>
-          <li className="p-4">Contact</li>
+          <li className="p-4 border-b border-gray-700">
+            <Link to="/">Home</Link>
+          </li>
+          <li className="p-4 border-b border-gray-700">
+            <Link to="/areas">Areas</Link>
+          </li>
+          <li className="p-4 border-b border-gray-700">
+            <Link to="/about">About</Link>
+          </li>
+          <li className="p-4">
+            <Link to="/contact">Contact</Link>
+          </li>
         </ul>
       </div>
     </div>

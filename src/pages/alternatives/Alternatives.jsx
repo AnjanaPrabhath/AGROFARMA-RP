@@ -13,22 +13,25 @@ const Alternatives = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   useEffect(() => {
-    // Fetch available vegetables from the API when component mounts
-    fetch(`${process.env.REACT_APP_API_URL}/api/vegetables`)
+    const url = `${process.env.REACT_APP_CROP_RECOMMENDATION_API}/api/vegetables`;
+    console.log("Fetching from:", url);
+
+    fetch(url)
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch vegetables");
-        }
+        if (!response.ok) throw new Error("Failed to fetch vegetables");
         return response.json();
       })
       .then((data) => {
-        setVegetables(data.vegetables);
+        console.log("Fetched data:", data);
+        setVegetables(data.vegetables); // correct based on your Postman response
       })
       .catch((err) => {
         setError("Failed to load crop data. Please try again later.");
-        console.error(err);
+        console.error("Fetch error:", err);
       });
   }, []);
+
+  console.log("Vegetables:", vegetables);
 
   const handleFormSubmit = async (formData) => {
     setLoading(true);
@@ -38,7 +41,7 @@ const Alternatives = () => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/recommend`,
+        `${process.env.REACT_APP_CROP_RECOMMENDATION_API}/api/recommend`,
         {
           method: "POST",
           headers: {
