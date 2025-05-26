@@ -35,6 +35,7 @@ import Log from "../components/dashboard/Log";
 import SoilStatus from "../components/dashboard/SoilStatus";
 import CostAnalysis from "../components/dashboard/CostAnalysis";
 import Assistant from "../components/dashboard/Assistant";
+import Recommendations from "../pages/recommendations/app";
 
 const navigation = [
   {
@@ -59,7 +60,8 @@ const features = [
     href: "#",
     icon: UsersIcon,
     current: false,
-    component: <Alternatives />,
+    // component: <Alternatives />,
+    component: <Recommendations />,
   },
   {
     name: "Growth Success Analysis",
