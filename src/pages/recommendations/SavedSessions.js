@@ -11,6 +11,8 @@ import {
   Sprout,
 } from "lucide-react";
 
+const baseUrl = process.env.NODE_API_URL || "http://localhost:8000";
+
 const SavedSessions = () => {
   const [sessions, setSessions] = useState([]);
   const [filteredSessions, setFilteredSessions] = useState([]);
@@ -45,7 +47,12 @@ const SavedSessions = () => {
   const fetchSessions = async () => {
     try {
       // Placeholder API call - replace with your actual endpoint
-      const response = await fetch("/api/sessions");
+      const response = await fetch(`${baseUrl}/api/sessions/recommendations`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setSessions(data);
@@ -139,9 +146,16 @@ const SavedSessions = () => {
     if (window.confirm("Are you sure you want to delete this session?")) {
       try {
         // Placeholder API call - replace with your actual endpoint
-        const response = await fetch(`/api/sessions/${sessionId}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `${baseUrl}/api/sessions/recommendations/${sessionId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
         if (response.ok) {
           setSessions(

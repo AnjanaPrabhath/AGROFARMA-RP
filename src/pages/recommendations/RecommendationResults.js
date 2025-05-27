@@ -15,6 +15,8 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+const baseUrl = process.env.NODE_API_URL || "http://localhost:8000";
+
 const RecommendationResults = ({ results, onBack, onSaveSession }) => {
   const [isSaving, setIsSaving] = useState(false);
 
@@ -40,10 +42,11 @@ const RecommendationResults = ({ results, onBack, onSaveSession }) => {
       };
 
       // Placeholder API call - replace with your actual endpoint
-      const response = await fetch("/api/sessions", {
+      const response = await fetch(`${baseUrl}/api/sessions/recommendations`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(sessionData),
       });

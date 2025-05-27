@@ -57,7 +57,7 @@ const navigation = [
 
 const features = [
   {
-    name: "Alternatives",
+    name: "Crop Recommendations",
     href: "#",
     icon: UsersIcon,
     current: false,
