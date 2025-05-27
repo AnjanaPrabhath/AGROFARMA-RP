@@ -36,6 +36,7 @@ import SoilStatus from "../components/dashboard/SoilStatus";
 import CostAnalysis from "../components/dashboard/CostAnalysis";
 import Assistant from "../components/dashboard/Assistant";
 import Recommendations from "../pages/recommendations/app";
+import MarketPricePrediction from "../pages/MarketPricePrediction"
 
 const navigation = [
   {
@@ -75,7 +76,7 @@ const features = [
     href: "#",
     icon: CalendarIcon,
     current: false,
-    component: <CostAnalysis />,
+    component: <MarketPricePrediction />,
   },
   {
     name: "Assistant",
