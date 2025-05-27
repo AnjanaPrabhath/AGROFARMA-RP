@@ -1,410 +1,304 @@
-import React, { useState, useEffect, useCallback } from "react";
-import Flatpickr from "react-flatpickr";
+import React, { useState, useEffect } from "react";
 import "flatpickr/dist/themes/light.css";
+import axios from "axios";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import moment from "moment";
-import axios from "axios"; // Import axios
 
 const SoilStatus = () => {
-  const [predictionResult, setPredictionResult] = useState(null);
-  const [weatherData, setWeatherData] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
-  // New State variables for Phosphorus, Potassium, and PH Value
-  const [phosphorus, setPhosphorus] = useState("");
-  const [potassium, setPotassium] = useState("");
-  const [phValue, setPhValue] = useState("");
+  const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [cropType, setCropType] = useState("");
   const [soilType, setSoilType] = useState("");
+  const [phValue, setPhValue] = useState("");
+  const [potassium, setPotassium] = useState("");
+  const [phosphorus, setPhosphorus] = useState("");
+  const [tempMean, setTempMean] = useState("");
+  const [daylightDuration, setDaylightDuration] = useState("");
+  const [rainSum, setRainSum] = useState("");
+  const [loadingWeather, setLoadingWeather] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [result, setResult] = useState(null);
 
-  const latitude = 6.9271;
-  const longitude = 79.8612;
-  const backendURL = "http://127.0.0.1:5000"; // Corrected: Base URL
-  const weatherEndpoint = "/get_weather_data"; // Added
-  const predictEndpoint = "/predict"; // Added
+  const fetchWeatherData = async (date) => {
+    setLoadingWeather(true);
+    try {
+      const formattedDate = moment(date).format("YYYY-MM-DD");
+      const response = await axios.get(
+        `http://127.0.0.1:5000/weather?date=${formattedDate}&latitude=6.9271&longitude=79.8612`
+      );
+      const data = response.data;
+      console.log(data);
 
-  const fetchWeatherData = useCallback(
-    async (date) => {
-      try {
-        const formattedDate = moment(date).format("YYYY-MM-DD");
-        const url = `${backendURL}${weatherEndpoint}?latitude=${latitude}&longitude=${longitude}&date=${formattedDate}`;
-        const response = await fetch(url);
+      // Set state only if data is available
+      setTempMean(data.temp_mean_c !== undefined && data.temp_mean_c !== null ? data.temp_mean_c : "");
+      setDaylightDuration(data.daylight_duration_hours !== undefined && data.daylight_duration_hours !== null ? data.daylight_duration_hours : "");
+      setRainSum(data.rain_sum_mm !== undefined && data.rain_sum_mm !== null ? data.rain_sum_mm : "");
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setWeatherData(data.weather_data);
-      } catch (error) {
-        console.error("Error fetching weather data:", error);
-        setWeatherData(null);
+    } catch (error) {
+      console.error("Failed to load weather data", error);
+      if (axios.isAxiosError(error)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          weather: `Failed to fetch weather data: ${error.message}. Server responded with ${error.response?.status} status.`,
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          weather: `Failed to fetch weather data: ${error}`,
+        }));
       }
-    },
-    [backendURL, latitude, longitude, weatherEndpoint]
-  ); // Include weatherEndpoint
+      setTempMean("");
+      setDaylightDuration("");
+      setRainSum("");
+    } finally {
+      setLoadingWeather(false);
+    }
+  };
 
   useEffect(() => {
     fetchWeatherData(selectedDate);
-  }, [selectedDate, fetchWeatherData]);
+  }, [selectedDate]);
 
-  const handleDateChange = (dates) => {
-    if (dates && dates.length > 0) {
-      setSelectedDate(dates[0]);
-    }
+  const validate = () => {
+    const newErrors = {};
+    const today = moment();
+    const selected = moment(selectedDate);
+    const diffDays = Math.abs(today.diff(selected, 'days'));
+
+    if (diffDays > 7) newErrors.date = "Date must be within 7 days from today.";
+    if (!cropType) newErrors.cropType = "Crop type is required.";
+    if (!soilType) newErrors.soilType = "Soil type is required.";
+    if (!phValue || parseFloat(phValue) < 3.5 || parseFloat(phValue) > 10.0)
+      newErrors.phValue = "PH must be between 3.5 and 10.0.";
+    if (!potassium || parseFloat(potassium) < 0 || parseFloat(potassium) > 1000)
+      newErrors.potassium = "Potassium must be between 0 and 1000.";
+    if (!phosphorus || parseFloat(phosphorus) < 0 || parseFloat(phosphorus) > 300)
+      newErrors.phosphorus = "Phosphorus must be between 0 and 300.";
+    if (tempMean === "" || isNaN(parseFloat(tempMean))) newErrors.tempMean = "Average temperature is required and must be a number.";
+    if (daylightDuration === "" || isNaN(parseFloat(daylightDuration))) newErrors.daylightDuration = "Daylight duration is required and must be a number.";
+    if (rainSum === "" || isNaN(parseFloat(rainSum))) newErrors.rainSum = "Rainfall amount is required and must be a number.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  // Handlers for input changes
-  const handlePhosphorusChange = (e) => {
-    setPhosphorus(e.target.value);
-  };
+  const handleSubmit = async () => {
+    if (!validate()) return;
 
-  const handlePotassiumChange = (e) => {
-    setPotassium(e.target.value);
-  };
-
-  const handlePhValueChange = (e) => {
-    setPhValue(e.target.value);
-  };
-
-  const handleCropTypeChange = (e) => {
-    setCropType(e.target.value);
-  };
-
-  const handleSoilTypeChange = (e) => {
-    setSoilType(e.target.value);
-  };
-
-  const handleAnalyzeClick = async () => {
-    // Construct your request body with all input values
-    const requestBody = {
-      "Crop type": cropType,
-      "PH Value": phValue, // Ensure it's a number
-      "Potassium (ppm)": potassium, // Ensure it's a number
-      "Phosphorus (ppm)": phosphorus, // Ensure it's a number
-      "Soil Type": soilType,
-      // "Sunlight Hours": weatherData ? weatherData.sunlight_hours : null, // Ensure weather data is available
-      "Sunlight Hours": 7, // Ensure weather data is available
-      "Temperature (°C)": 24, // Ensure weather data is available
-      "Humidity (%)": 45, // Ensure weather data is available
-      // "Humidity (%)": weatherData ? weatherData.humidity : null, // Ensure weather data is available
+    const body = {
+      date: moment(selectedDate).format("YYYY-MM-DD"),
+      location: "Kandy",
+      crop_type: cropType,
+      ph_value: parseFloat(phValue),
+      "potassium_(ppm)": parseFloat(potassium),
+      "phosphorus_(ppm)": parseFloat(phosphorus),
+      soil_type: soilType,
+      temp_mean_c: parseFloat(tempMean),
+      daylight_duration_sec: parseFloat(daylightDuration),
+      rain_sum_mm: parseFloat(rainSum),
     };
 
     try {
-      console.log("Request Body:", requestBody); // Log request body
-
-      // Use axios for the POST request
-      const response = await axios.put(
-        `${backendURL}${predictEndpoint}`,
-        requestBody,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("Response from the server : ", response); // Log the full response
-      console.log("Response data : ", response.data); // Log the data
-
-      setPredictionResult(response.data); // Access response data with .data
-      console.log("predictionResult state:", predictionResult); // Log after setting state
-    } catch (error) {
-      console.error("Error fetching prediction:", error);
-      setPredictionResult({ predicted_class: "Error", error: error.message });
+      const res = await axios.post("http://127.0.0.1:5000/predict", body);
+      setResult(res.data);
+    } catch (err) {
+      setResult({ error: "Failed to get prediction." });
     }
   };
 
-  // Fertilizer Recommendations
-  const fertilizerRecommendations = {
-    Tomato: { Urea: 65, TSP: 325, MOP: 65 },
-    Bean: { Urea: 110, TSP: 270, MOP: 75 },
-    Brinjal: { Urea: 75, TSP: 325, MOP: 85 },
-    Cabbage: { Urea: 110, TSP: 270, MOP: 75 },
-    Capsicum: { Urea: 100, TSP: 215, MOP: 65 },
+  const arrangeData = (date) => {
+    setSelectedDate(date);
   };
+
   return (
     <div className="flex items-center justify-center w-full h-[96vh] bg-gradient-to-br from-[#a0fbc1] to-white rounded-xl">
-      <div className="">
-        <div className="max-w-4xl w-full bg-white rounded-lg shadow-xl overflow-hidden">
-          <div className="px-6 py-8">
-            <div className="text-left">
-              {/* <div className="flex items-center">
-                <img
-                  src="/logo.png"
-                  alt="AgroFarma Logo"
-                  className="h-8 mr-2"
+      <div className="max-w-4xl w-full bg-white rounded-lg shadow-xl overflow-hidden">
+        <div className="px-6 py-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Plant Growth Analysis
+          </h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Select Date
+                </label>
+                <input
+                  type="date"
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
+                  value={selectedDate}
+                  min={moment().startOf("day").format("YYYY-MM-DD")}
+                  max={moment().add(6, "days").endOf("day").format("YYYY-MM-DD")}
+                  onChange={(e) => arrangeData(e.target.value)}
+                   // Make the input field read-only
                 />
-                <h1 className="text-xl font-bold text-green-700">AGROFARMA</h1>
-              </div> */}
-            </div>
-            <div className="">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Plant Growth Analysis
-              </h2>
-              <p className="mt-2 text-gray-600">
-                Gain insights into your plant’s growth with our intelligent
-                prediction tool. Using environmental data, soil conditions, and
-                past growth patterns, this feature helps you estimate your
-                plant’s development over time. Stay informed and optimize care
-                for healthier, more productive crops!
-              </p>
-            </div>
+                {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
+              </div>
+              {loadingWeather && <p className="text-sm text-gray-500">Loading weather data...</p>}
+              {errors.weather && <p className="text-red-500 text-sm">{errors.weather}</p>}
 
-            <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Input Form */}
-              <div className="space-y-4">
-                {/* Date Picker */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Crop Type
+                </label>
+                <select
+                  className="block w-full border-gray-300 rounded-md"
+                  value={cropType}
+                  onChange={(e) => setCropType(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  {["Tomato", "Brinjal", "Bean", "Cabbage", "Capsicum"].map((crop) => (
+                    <option key={crop} value={crop}>
+                      {crop}
+                    </option>
+                  ))}
+                </select>
+                {errors.cropType && <p className="text-red-500 text-sm">{errors.cropType}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Soil Type
+                </label>
+                <select
+                  className="block w-full border-gray-300 rounded-md"
+                  value={soilType}
+                  onChange={(e) => setSoilType(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  {["Clay Loam", "Sand", "Sandy Clay Loam", "Sandy Loam"].map((soil) => (
+                    <option key={soil} value={soil}>
+                      {soil}
+                    </option>
+                  ))}
+                </select>
+                {errors.soilType && <p className="text-red-500 text-sm">{errors.soilType}</p>}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label
-                    htmlFor="date"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Select Date:
+                  <label className="block text-sm font-medium text-gray-700">
+                    PH Value
                   </label>
-                  <Flatpickr
-                    id="date"
-                    className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    options={{ dateFormat: "Y-m-d", defaultDate: selectedDate }}
-                    onChange={handleDateChange}
+                  <input
+                    type="number"
+                    className="block w-full border-gray-300 rounded-md"
+                    value={phValue}
+                    onChange={(e) => setPhValue(e.target.value)}
                   />
+                  {errors.phValue && <p className="text-red-500 text-sm">{errors.phValue}</p>}
                 </div>
-
                 <div>
-                  <label
-                    htmlFor="cropType"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Select Your Crop Type
+                  <label className="block text-sm font-medium text-gray-700">
+                    Potassium (ppm)
                   </label>
-                  <div className="mt-1">
-                    <select
-                      id="cropType"
-                      className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      value={cropType}
-                      onChange={handleCropTypeChange}
-                    >
-                      <option value="">Select Crop Type</option>
-                      <option value="Bean">Bean </option>
-                      <option value="Brinjal">Brinjal</option>
-                      <option value="Cabbage">Cabbage</option>
-                      <option value="Capsicum">Capsicum</option>
-                      <option value="Tomato">Tomato</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="soilType"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Select Your Soil Type
-                  </label>
-                  <div className="mt-1">
-                    <select
-                      id="soilType"
-                      className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      value={soilType}
-                      onChange={handleSoilTypeChange}
-                    >
-                      <option value="">Select Soil Type</option>
-                      <option value="Clay">Clay</option>
-                      <option value="Clay Loam">Clay Loam</option>
-                      <option value="Clay Soil">Clay Soil</option>
-                      <option value="Clay Loam">Clay Loam</option>
-                      <option value="Loamy Soil">Loamy Soil</option>
-                      <option value="Sand Clay Loam">Sandy Clay Loam</option>
-                      <option value="Well-drained">Well-drained</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="phValue"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      PH Value
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="number"
-                        id="phValue"
-                        className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                        value={phValue}
-                        onChange={handlePhValueChange}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="potassium"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Potassium (PPM)
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="number"
-                        id="potassium"
-                        className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                        value={potassium}
-                        onChange={handlePotassiumChange}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="phosphorous"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Phosphorous (PPM)
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="number"
-                        id="phosphorous"
-                        className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                        value={phosphorus}
-                        onChange={handlePhosphorusChange}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    {/* Sunlight Hours (Read-only) */}
-                    <label
-                      htmlFor="sunlightHours"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Sunlight Hours
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="number"
-                        id="sunlightHours"
-                        className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-100"
-                        value={weatherData ? weatherData.sunlight_hours : ""}
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      htmlFor="temperature"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Temperature Difference
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="number"
-                        id="temperature"
-                        className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-100"
-                        value={
-                          weatherData ? weatherData.temperature_difference : ""
-                        }
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="humidity"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Humidity (%)
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="number"
-                        id="humidity"
-                        className="shadow-sm focus:ring-green-500 focus:border-green-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-100"
-                        value={weatherData ? weatherData.humidity : ""}
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <button
-                    onClick={handleAnalyzeClick}
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                  >
-                    Start Growth Analysis
-                  </button>
+                  <input
+                    type="number"
+                    className="block w-full border-gray-300 rounded-md"
+                    value={potassium}
+                    onChange={(e) => setPotassium(e.target.value)}
+                  />
+                  {errors.potassium && <p className="text-red-500 text-sm">{errors.potassium}</p>}
                 </div>
               </div>
 
-              {/* Result */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-700 pb-2">
-                  Result
-                </h3>
-                <div className="bg-gray-50 rounded-md p-4 h-fit overflow-y-auto">
-                  {predictionResult ? (
-                    <>
-                      {predictionResult.error ? (
-                        <p className="text-red-500">
-                          Error: {predictionResult.error}
-                        </p>
-                      ) : (
-                        <>
-                          <p className="text-gray-600">
-                            Predicted Status: {predictionResult.predicted_class}
-                          </p>
-                          {/* Check if probability_growth is a number before calling toFixed */}
-                          {typeof predictionResult.probability_growth ===
-                          "number" ? (
-                            <p className="text-gray-600">
-                              Prediction Growth Rate:{" "}
-                              {(
-                                predictionResult.probability_growth * 100
-                              ).toFixed(0)}
-                              %
-                            </p>
-                          ) : (
-                            <p className="text-gray-600">
-                              Prediction Growth Rate: N/A
-                            </p>
-                          )}
+                <label className="block text-sm font-medium text-gray-700">
+                  Phosphorus (ppm)
+                </label>
+                <input
+                  type="number"
+                  className="block w-full border-gray-300 rounded-md"
+                  value={phosphorus}
+                  onChange={(e) => setPhosphorus(e.target.value)}
+                />
+                {errors.phosphorus && <p className="text-red-500 text-sm">{errors.phosphorus}</p>}
+              </div>
 
-                          {/* Fertilizer Recommendations */}
-                          {predictionResult.predicted_class === "Growth" &&
-                            fertilizerRecommendations[cropType] && (
-                              <>
-                                <h4 className="text-md font-semibold text-green-700 mt-4 mb-2">
-                                  Recommended Fertilizer
-                                </h4>
-                                <p className="text-gray-600">
-                                  Urea:{" "}
-                                  {fertilizerRecommendations[cropType].Urea}{" "}
-                                  kg/ha
-                                </p>
-                                <p className="text-gray-600">
-                                  TSP: {fertilizerRecommendations[cropType].TSP}{" "}
-                                  kg/ha
-                                </p>
-                                <p className="text-gray-600">
-                                  MOP: {fertilizerRecommendations[cropType].MOP}{" "}
-                                  kg/ha
-                                </p>
-                              </>
-                            )}
-                        </>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Average Temperature (°C)
+                  </label>
+                  <input
+                    type="number"
+                    className="block w-full border-gray-300 rounded-md bg-gray-100"
+                    value={tempMean}
+                    onChange={(e) => setTempMean(e.target.value)}
+                    readOnly
+                  />
+                  {errors.tempMean && <p className="text-red-500 text-sm">{errors.tempMean}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Daylight Duration 
+                  </label>
+                  <input
+                    type="number"
+                    className="block w-full border-gray-300 rounded-md bg-gray-100"
+                    value={daylightDuration}
+                    onChange={(e) => setDaylightDuration(e.target.value)}
+                    readOnly
+                  />
+                  {errors.daylightDuration && <p className="text-red-500 text-sm">{errors.daylightDuration}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Rainfall (mm)
+                </label>
+                <input
+                  type="number"
+                  className="block w-full border-gray-300 rounded-md bg-gray-100"
+                  value={rainSum}
+                  onChange={(e) => setRainSum(e.target.value)}
+                  readOnly
+                />
+                {errors.rainSum && <p className="text-red-500 text-sm">{errors.rainSum}</p>}
+              </div>
+
+              <button
+                className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+                onClick={handleSubmit}
+              >
+                Start Growth Analysis
+              </button>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700 pb-2">Result</h3>
+              <div className="bg-gray-50 rounded-md p-4 min-h-[100px]">
+                {result ? (
+                  result.error ? (
+                    <p className="text-red-500">{result.error}</p>
+                  ) : (
+                    <>
+                      {result.predicted_class === "Suitable" && result.confidence >= 0.6 && (
+                        <p className="text-gray-700">
+                          Growth success rate:{" "}
+                          <span className="font-bold">
+                            {Math.round(result.confidence * 100)}%
+                          </span>
+                        </p>
+                      )}
+
+                      {result.predicted_class === "Suitable" ? (
+                        <div className="flex items-center gap-2 mt-2">
+                          <CheckCircleIcon className="h-6 w-6 text-green-600" />
+                          <span className="text-green-700 font-medium">Suitable for growth</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 mt-2">
+                          <XCircleIcon className="h-6 w-6 text-red-600" />
+                          <span className="text-red-700 font-medium">Not suitable for growth</span>
+                        </div>
                       )}
                     </>
-                  ) : (
-                    <p className="text-gray-600">No analysis performed yet.</p>
-                  )}
-                </div>
+                  )
+                ) : (
+                  <p className="text-gray-500">No analysis performed yet.</p>
+                )}
               </div>
             </div>
           </div>
