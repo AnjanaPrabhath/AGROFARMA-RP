@@ -36,7 +36,7 @@ import SoilStatus from "../components/dashboard/SoilStatus";
 import CostAnalysis from "../components/dashboard/CostAnalysis";
 import Assistant from "../components/dashboard/Assistant";
 import Recommendations from "../pages/recommendations/app";
-import MarketPricePrediction from "../pages/MarketPricePrediction"
+import MarketPricePrediction from "../pages/MarketPricePrediction";
 
 const navigation = [
   {
@@ -46,13 +46,13 @@ const navigation = [
     current: true,
     component: <DashboardHome />,
   },
-  {
-    name: "Log",
-    href: "#",
-    icon: ChartPieIcon,
-    current: false,
-    component: <Log />,
-  },
+  // {
+  //   name: "Log",
+  //   href: "#",
+  //   icon: ChartPieIcon,
+  //   current: false,
+  //   component: <Log />,
+  // },
 ];
 
 const features = [
